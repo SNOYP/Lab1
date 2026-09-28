@@ -1,0 +1,14 @@
+D:\Lab1_2026\obj\Debug\net10.0\Lab1_2026.GeneratedMSBuildEditorConfig.editorconfig
+D:\Lab1_2026\obj\Debug\net10.0\Lab1_2026.AssemblyInfoInputs.cache
+D:\Lab1_2026\obj\Debug\net10.0\Lab1_2026.AssemblyInfo.cs
+D:\Lab1_2026\obj\Debug\net10.0\Lab1_2026.csproj.CoreCompileInputs.cache
+D:\Lab1_2026\bin\Debug\net10.0\Lab1_2026.exe
+D:\Lab1_2026\bin\Debug\net10.0\Lab1_2026.deps.json
+D:\Lab1_2026\bin\Debug\net10.0\Lab1_2026.runtimeconfig.json
+D:\Lab1_2026\bin\Debug\net10.0\Lab1_2026.dll
+D:\Lab1_2026\bin\Debug\net10.0\Lab1_2026.pdb
+D:\Lab1_2026\obj\Debug\net10.0\Lab1_2026.dll
+D:\Lab1_2026\obj\Debug\net10.0\refint\Lab1_2026.dll
+D:\Lab1_2026\obj\Debug\net10.0\Lab1_2026.pdb
+D:\Lab1_2026\obj\Debug\net10.0\Lab1_2026.genruntimeconfig.cache
+D:\Lab1_2026\obj\Debug\net10.0\ref\Lab1_2026.dll
