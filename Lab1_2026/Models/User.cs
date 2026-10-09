@@ -2,10 +2,9 @@ namespace Lab1_2026.Models
 {
     public class User
     {
-        public string? LastName { get; set; }
-        public string? FirstName { get; set; }
-        public string? Profession { get; set; }
-        public string? Gender { get; set; }
-        public int TestNumber { get; set; } = 11;
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Profession { get; set; } = string.Empty;
+        public string Gender { get; set; } = string.Empty;
     }
 }

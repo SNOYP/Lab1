@@ -6,21 +6,27 @@ namespace Lab1_2026.Services
 {
     public class StorageService
     {
-        private readonly string filePath = Path.Combine("data", "results.txt");
-
         public void SaveResult(User user, int totalScore, string interpretation)
         {
-            Directory.CreateDirectory("data");
+            string directory = "data";
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
 
-            string record = $"Дата тестування: {DateTime.Now}\n" +
-                            $"Прізвище та Ім'я: {user.LastName} {user.FirstName}\n" +
-                            $"Професія: {user.Profession} | Стать: {user.Gender}\n" +
-                            $"Варіант тесту: {user.TestNumber} (Шуберт)\n" +
-                            $"Набрані бали: {totalScore}\n" +
-                            $"Інтерпретація: {interpretation}\n" +
-                            "--------------------------------------------------\n";
+            string filePath = Path.Combine(directory, "results.txt");
 
-            File.AppendAllText(filePath, record);
+            // Красивый многострочный формат с Шубертом
+            string dataLine = "--------------------------------------------------\n" +
+                              $"Дата тестування: {DateTime.Now:dd.MM.yyyy HH:mm:ss}\n" +
+                              $"Прізвище та Ім'я: {user.LastName} {user.FirstName}\n" +
+                              $"Професія: {user.Profession} | Стать: {user.Gender}\n" +
+                              $"Варіант тесту: 11 (Шуберт)\n" +
+                              $"Набрані бали: {totalScore}\n" +
+                              $"Інтерпретація: {interpretation}\n" +
+                              "--------------------------------------------------\n";
+
+            File.AppendAllText(filePath, dataLine);
         }
     }
 }

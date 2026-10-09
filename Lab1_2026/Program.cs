@@ -2,12 +2,12 @@
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-using Lab1_2026.Services;
 using Lab1_2026.Models;
+using Lab1_2026.Services;
 
 namespace Lab1_2026
 {
-    static class Program
+    internal static class Program
     {
         [STAThread]
         static void Main()
@@ -18,97 +18,95 @@ namespace Lab1_2026
         }
     }
 
-    // --- БАЗОВА ФОРМА З ГРАДІЄНТОМ ---
     public class GradientForm : Form
     {
         public GradientForm()
         {
-            this.DoubleBuffered = true;
-            this.Resize += (s, e) => this.Invalidate(); // Перемальовуємо градієнт при зміні розміру
+            this.Size = new Size(800, 600);
+            this.MinimumSize = new Size(600, 500);
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.DoubleBuffered = true; 
+            this.ResizeRedraw = true; 
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-            if (this.ClientRectangle.Width > 0 && this.ClientRectangle.Height > 0)
+            using (LinearGradientBrush brush = new LinearGradientBrush(this.ClientRectangle, Color.Indigo, Color.DarkMagenta, 45F))
             {
-                using (LinearGradientBrush brush = new LinearGradientBrush(this.ClientRectangle, Color.FromArgb(15, 15, 20), Color.FromArgb(85, 20, 140), 45F))
-                {
-                    e.Graphics.FillRectangle(brush, this.ClientRectangle);
-                }
+                e.Graphics.FillRectangle(brush, this.ClientRectangle);
             }
+        }
+
+        protected void CenterPanel(Panel panel)
+        {
+            panel.Left = (this.ClientSize.Width - panel.Width) / 2;
+            panel.Top = (this.ClientSize.Height - panel.Height) / 2;
         }
     }
 
-    // --- 1. ВІКНО РЕЄСТРАЦІЇ ---
+    // 1. ОКНО РЕГИСТРАЦИИ
     public class RegistrationForm : GradientForm
     {
         private Panel mainPanel;
         private TextBox txtLastName, txtFirstName, txtProfession;
         private ComboBox cmbGender;
+        private Button btnStart;
 
         public RegistrationForm()
         {
-            this.Text = "Лабораторна робота №1 - Реєстрація";
-            this.Size = new Size(600, 600);
-            this.MinimumSize = new Size(500, 550);
-            this.StartPosition = FormStartPosition.CenterScreen;
+            this.Text = "Лабораторна робота №1-2 - Реєстрація";
+            InitializeUI();
+        }
 
-            // Панель-контейнер, яка завжди буде по центру
-            mainPanel = new Panel() { Size = new Size(420, 450), BackColor = Color.Transparent };
+        private void InitializeUI()
+        {
+            mainPanel = new Panel { Width = 400, Height = 480, BackColor = Color.Transparent };
             
-            var lblTitle = new Label() { Text = "Реєстрація респондента", Font = new Font("Segoe UI", 18, FontStyle.Bold), Location = new Point(0, 0), Size = new Size(420, 40), ForeColor = Color.White, TextAlign = ContentAlignment.MiddleCenter };
+            Label lblTitle = new Label { Text = "Реєстрація", Top = 0, Left = 0, Width = 400, Height = 50, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Arial", 22, FontStyle.Bold), ForeColor = Color.White };
+            mainPanel.Controls.Add(lblTitle);
+
+            string[] labels = { "Прізвище:", "Ім'я:", "Професія / Спеціальність:", "Стать:" };
+            int startY = 60;
+
+            for (int i = 0; i < 3; i++)
+            {
+                mainPanel.Controls.Add(new Label { Text = labels[i], Top = startY + (i * 70), Left = 0, Width = 400, Height = 25, ForeColor = Color.White, Font = new Font("Arial", 12) });
+            }
+
+            txtLastName = new TextBox { Top = 90, Left = 0, Width = 400, Font = new Font("Arial", 14) };
+            txtFirstName = new TextBox { Top = 160, Left = 0, Width = 400, Font = new Font("Arial", 14) };
+            txtProfession = new TextBox { Top = 230, Left = 0, Width = 400, Font = new Font("Arial", 14) };
             
-            int currentY = 60;
-            var lbl1 = CreateLabel("Прізвище:", currentY);
-            txtLastName = CreateTextBox(currentY + 25);
-
-            currentY += 70;
-            var lbl2 = CreateLabel("Ім'я:", currentY);
-            txtFirstName = CreateTextBox(currentY + 25);
-
-            currentY += 70;
-            var lbl3 = CreateLabel("Професія / Спеціальність:", currentY);
-            txtProfession = CreateTextBox(currentY + 25);
-
-            currentY += 70;
-            var lbl4 = CreateLabel("Стать:", currentY);
-            cmbGender = new ComboBox() { Location = new Point(0, currentY + 25), Size = new Size(420, 25), Font = new Font("Segoe UI", 11), DropDownStyle = ComboBoxStyle.DropDownList };
+            mainPanel.Controls.Add(new Label { Text = labels[3], Top = 280, Left = 0, Width = 400, Height = 25, ForeColor = Color.White, Font = new Font("Arial", 12) });
+            cmbGender = new ComboBox { Top = 310, Left = 0, Width = 400, Font = new Font("Arial", 14), DropDownStyle = ComboBoxStyle.DropDownList };
             cmbGender.Items.AddRange(new string[] { "Чоловіча", "Жіноча" });
             cmbGender.SelectedIndex = 0;
 
-            var btnStart = new Button() { Text = "Розпочати тест", Location = new Point(100, currentY + 90), Size = new Size(220, 45), BackColor = Color.MediumSlateBlue, ForeColor = Color.White, Font = new Font("Segoe UI", 12, FontStyle.Bold), FlatStyle = FlatStyle.Flat, Cursor = Cursors.Hand };
+            mainPanel.Controls.Add(txtLastName);
+            mainPanel.Controls.Add(txtFirstName);
+            mainPanel.Controls.Add(txtProfession);
+            mainPanel.Controls.Add(cmbGender);
+
+            btnStart = new Button { Text = "Розпочати тест", Top = 400, Left = 50, Width = 300, Height = 45, BackColor = Color.MediumSlateBlue, ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Font = new Font("Arial", 12, FontStyle.Bold), Cursor = Cursors.Hand };
             btnStart.FlatAppearance.BorderSize = 0;
             btnStart.Click += BtnStart_Click;
+            mainPanel.Controls.Add(btnStart);
 
-            mainPanel.Controls.AddRange(new Control[] { lblTitle, lbl1, txtLastName, lbl2, txtFirstName, lbl3, txtProfession, lbl4, cmbGender, btnStart });
+            // ПРИВЯЗКА КЛАВИШИ ENTER К КНОПКЕ "РОЗПОЧАТИ ТЕСТ"
+            this.AcceptButton = btnStart;
+
             this.Controls.Add(mainPanel);
 
-            this.Resize += (s, e) => CenterPanel();
-            CenterPanel();
+            CenterPanel(mainPanel);
+            this.Resize += (s, e) => CenterPanel(mainPanel);
         }
 
-        private void CenterPanel()
-        {
-            mainPanel.Left = (this.ClientSize.Width - mainPanel.Width) / 2;
-            mainPanel.Top = (this.ClientSize.Height - mainPanel.Height) / 2;
-        }
-
-        private Label CreateLabel(string text, int top)
-        {
-            return new Label() { Text = text, Location = new Point(0, top), Size = new Size(420, 20), Font = new Font("Segoe UI", 10, FontStyle.Regular), ForeColor = Color.Thistle };
-        }
-
-        private TextBox CreateTextBox(int top)
-        {
-            return new TextBox() { Location = new Point(0, top), Size = new Size(420, 25), Font = new Font("Segoe UI", 11) };
-        }
-
-        private void BtnStart_Click(object? sender, EventArgs e)
+        private void BtnStart_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtLastName.Text) || string.IsNullOrWhiteSpace(txtFirstName.Text))
             {
-                MessageBox.Show("Будь ласка, заповніть прізвище та ім'я!", "Попередження", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Будь ласка, заповніть всі поля.");
                 return;
             }
 
@@ -117,97 +115,115 @@ namespace Lab1_2026
                 LastName = txtLastName.Text.Trim(),
                 FirstName = txtFirstName.Text.Trim(),
                 Profession = txtProfession.Text.Trim(),
-                Gender = cmbGender.SelectedItem?.ToString()
+                Gender = cmbGender.SelectedItem.ToString()
             };
 
-            this.Hide();
             var testForm = new TestingForm(user);
-            testForm.Closed += (s, args) => this.Close();
+            this.Hide();
             testForm.Show();
         }
+        
+        protected override void OnFormClosed(FormClosedEventArgs e) => Environment.Exit(0);
     }
 
-    // --- 2. ВІКНО ТЕСТУВАННЯ ---
+    // 2. ОКНО ТЕСТИРОВАНИЯ
     public class TestingForm : GradientForm
     {
-        private Panel mainPanel;
         private User currentUser;
         private TestService testService = new TestService();
         private StorageService storageService = new StorageService();
-        private Question[] questions;
+        
+        private string[] questions;
         private int currentIndex = 0;
         private int totalScore = 0;
 
+        private Panel mainPanel;
         private Label lblProgress, lblQuestionText;
         private RadioButton[] rbOptions;
+        private Button btnNext;
 
         public TestingForm(User user)
         {
             currentUser = user;
-            questions = testService.GetShubertQuestions();
-
-            this.Text = "Лабораторна робота №1 - Тестування (Варіант 11)";
-            this.Size = new Size(800, 600);
-            this.MinimumSize = new Size(650, 500);
-            this.StartPosition = FormStartPosition.CenterScreen;
-
-            mainPanel = new Panel() { Size = new Size(600, 450), BackColor = Color.Transparent };
-
-            lblProgress = new Label() { Text = "", Font = new Font("Segoe UI", 12, FontStyle.Bold), Location = new Point(0, 0), Size = new Size(600, 30), ForeColor = Color.MediumSlateBlue, TextAlign = ContentAlignment.MiddleCenter };
-            lblQuestionText = new Label() { Text = "", Font = new Font("Segoe UI", 14, FontStyle.Bold), Location = new Point(0, 40), Size = new Size(600, 100), ForeColor = Color.White, TextAlign = ContentAlignment.MiddleCenter };
-
-            string[] optionTexts = {
-                "2 - Повністю згоден, \"Так\"",
-                "1 - Швидше \"Так\", ніж \"Ні\"",
-                "0 - Важко сказати, ні \"Так\", ні \"Ні\"",
-                "-1 - Швидше \"Ні\", ніж \"Так\"",
-                "-2 - Повністю не згоден, \"Ні\""
-            };
-
-            rbOptions = new RadioButton[5];
-            int topOffset = 160;
-            for (int i = 0; i < 5; i++)
-            {
-                rbOptions[i] = new RadioButton() { Text = optionTexts[i], Location = new Point(50, topOffset), Size = new Size(500, 35), Font = new Font("Segoe UI", 12), ForeColor = Color.White, Cursor = Cursors.Hand };
-                mainPanel.Controls.Add(rbOptions[i]);
-                topOffset += 45;
-            }
-
-            var btnNext = new Button() { Text = "Наступне питання", Location = new Point(200, 390), Size = new Size(200, 45), BackColor = Color.MediumSlateBlue, ForeColor = Color.White, Font = new Font("Segoe UI", 12, FontStyle.Bold), FlatStyle = FlatStyle.Flat, Cursor = Cursors.Hand };
-            btnNext.FlatAppearance.BorderSize = 0;
-            btnNext.Click += BtnNext_Click;
-
-            mainPanel.Controls.AddRange(new Control[] { lblProgress, lblQuestionText, btnNext });
-            this.Controls.Add(mainPanel);
-
-            this.Resize += (s, e) => CenterPanel();
-            CenterPanel();
+            questions = testService.GetQuestions();
+            
+            this.Text = "Лабораторна робота №2 - Тестування";
+            InitializeUI();
             LoadQuestion();
         }
 
-        private void CenterPanel()
+        private void InitializeUI()
         {
-            mainPanel.Left = (this.ClientSize.Width - mainPanel.Width) / 2;
-            mainPanel.Top = (this.ClientSize.Height - mainPanel.Height) / 2;
+            mainPanel = new Panel { Width = 600, Height = 480, BackColor = Color.Transparent };
+
+            lblProgress = new Label { Top = 0, Left = 0, Width = 600, Height = 30, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Arial", 12), ForeColor = Color.Plum };
+            mainPanel.Controls.Add(lblProgress);
+
+            lblQuestionText = new Label { Top = 40, Left = 0, Width = 600, Height = 100, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Arial", 14, FontStyle.Bold), ForeColor = Color.White };
+            mainPanel.Controls.Add(lblQuestionText);
+
+            rbOptions = new RadioButton[5];
+            string[] optionTexts = { 
+                "2 - Повністю згоден, \"Так\"", 
+                "1 - Швидше \"Так\", ніж \"Ні\"", 
+                "0 - Важко сказати, ні \"Так\", ні \"Ні\"", 
+                "-1 - Швидше \"Ні\", ніж \"Так\"", 
+                "-2 - Повністю не згоден, \"Ні\"" 
+            };
+
+            for (int i = 0; i < 5; i++)
+            {
+                rbOptions[i] = new RadioButton
+                {
+                    Text = optionTexts[i],
+                    Top = 150 + (i * 45),
+                    Left = 100,
+                    Width = 400,
+                    Height = 35,
+                    Font = new Font("Arial", 12),
+                    ForeColor = Color.White,
+                    Cursor = Cursors.Hand
+                };
+                mainPanel.Controls.Add(rbOptions[i]);
+            }
+
+            btnNext = new Button { Text = "Наступне питання", Top = 400, Left = 150, Width = 300, Height = 45, BackColor = Color.MediumSlateBlue, ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Font = new Font("Arial", 12, FontStyle.Bold), Cursor = Cursors.Hand };
+            btnNext.FlatAppearance.BorderSize = 0;
+            btnNext.Click += BtnNext_Click;
+            mainPanel.Controls.Add(btnNext);
+
+            // ПРИВЯЗКА КЛАВИШИ ENTER К КНОПКЕ "НАСТУПНЕ ПИТАННЯ"
+            this.AcceptButton = btnNext;
+
+            this.Controls.Add(mainPanel);
+
+            CenterPanel(mainPanel);
+            this.Resize += (s, e) => CenterPanel(mainPanel);
         }
 
         private void LoadQuestion()
         {
-            if (currentIndex < questions.Length)
-            {
-                lblProgress.Text = $"Питання {currentIndex + 1} з {questions.Length}";
-                lblQuestionText.Text = questions[currentIndex].Text;
-                rbOptions[0].Checked = true;
-            }
+            foreach (var rb in rbOptions) rb.Checked = false;
+            lblProgress.Text = $"Питання {currentIndex + 1} з {questions.Length}";
+            lblQuestionText.Text = questions[currentIndex];
         }
 
-        private void BtnNext_Click(object? sender, EventArgs e)
+        private void BtnNext_Click(object sender, EventArgs e)
         {
-            int scoreValue = 2;
-            if (rbOptions[1].Checked) scoreValue = 1;
-            else if (rbOptions[2].Checked) scoreValue = 0;
-            else if (rbOptions[3].Checked) scoreValue = -1;
-            else if (rbOptions[4].Checked) scoreValue = -2;
+            int scoreValue = 0;
+            bool isSelected = false;
+
+            if (rbOptions[0].Checked) { scoreValue = 2; isSelected = true; }
+            else if (rbOptions[1].Checked) { scoreValue = 1; isSelected = true; }
+            else if (rbOptions[2].Checked) { scoreValue = 0; isSelected = true; }
+            else if (rbOptions[3].Checked) { scoreValue = -1; isSelected = true; }
+            else if (rbOptions[4].Checked) { scoreValue = -2; isSelected = true; }
+
+            if (!isSelected)
+            {
+                MessageBox.Show("Будь ласка, оберіть один з варіантів відповіді.");
+                return;
+            }
 
             totalScore += scoreValue;
             currentIndex++;
@@ -220,50 +236,55 @@ namespace Lab1_2026
             {
                 string interpretation = testService.InterpretResult(totalScore);
                 storageService.SaveResult(currentUser, totalScore, interpretation);
-
-                // Виклик нашого нового красивого вікна результатів
+                
                 var resultForm = new ResultForm(currentUser, totalScore, interpretation);
                 this.Hide();
-                resultForm.Closed += (s, args) => this.Close();
                 resultForm.Show();
             }
         }
+        
+        protected override void OnFormClosed(FormClosedEventArgs e) => Environment.Exit(0);
     }
 
-    // --- 3. КРАСИВЕ ВІКНО РЕЗУЛЬТАТІВ ---
+    // 3. ОКНО РЕЗУЛЬТАТОВ
     public class ResultForm : GradientForm
     {
-        private Panel mainPanel;
-
-        public ResultForm(User user, int score, string interpretation)
+        public ResultForm(User user, int totalScore, string interpretation)
         {
             this.Text = "Результати тестування";
-            this.Size = new Size(550, 450);
-            this.StartPosition = FormStartPosition.CenterScreen;
 
-            mainPanel = new Panel() { Size = new Size(450, 350), BackColor = Color.Transparent };
+            Panel mainPanel = new Panel { Width = 600, Height = 450, BackColor = Color.Transparent };
 
-            var lblTitle = new Label() { Text = "Тестування завершено!", Font = new Font("Segoe UI", 18, FontStyle.Bold), Location = new Point(0, 0), Size = new Size(450, 40), ForeColor = Color.Violet, TextAlign = ContentAlignment.MiddleCenter };
-            var lblUser = new Label() { Text = $"Користувач: {user.LastName} {user.FirstName}", Font = new Font("Segoe UI", 12), Location = new Point(0, 60), Size = new Size(450, 30), ForeColor = Color.White, TextAlign = ContentAlignment.MiddleCenter };
-            var lblScore = new Label() { Text = $"Загальна сума балів: {score}", Font = new Font("Segoe UI", 14, FontStyle.Bold), Location = new Point(0, 110), Size = new Size(450, 30), ForeColor = Color.LightSkyBlue, TextAlign = ContentAlignment.MiddleCenter };
-            var lblResult = new Label() { Text = $"Висновок:\n{interpretation}", Font = new Font("Segoe UI", 16, FontStyle.Bold), Location = new Point(0, 160), Size = new Size(450, 70), ForeColor = Color.Gold, TextAlign = ContentAlignment.MiddleCenter };
-            var lblSaved = new Label() { Text = "Результати збережено у файл data\\results.txt", Font = new Font("Segoe UI", 10, FontStyle.Italic), Location = new Point(0, 240), Size = new Size(450, 30), ForeColor = Color.Thistle, TextAlign = ContentAlignment.MiddleCenter };
+            Label lblTitle = new Label { Text = "Тестування завершено!", Top = 0, Left = 0, Width = 600, Height = 50, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Arial", 22, FontStyle.Bold), ForeColor = Color.Plum };
+            Label lblUser = new Label { Text = $"Користувач: {user.LastName} {user.FirstName}", Top = 80, Left = 0, Width = 600, Height = 30, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Arial", 14), ForeColor = Color.White };
+            Label lblScore = new Label { Text = $"Загальна сума балів: {totalScore}", Top = 140, Left = 0, Width = 600, Height = 35, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Arial", 16, FontStyle.Bold), ForeColor = Color.White };
+            
+            Label lblConcTitle = new Label { Text = "Висновок:", Top = 210, Left = 0, Width = 600, Height = 30, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Arial", 14, FontStyle.Bold), ForeColor = Color.Gold };
+            Label lblInterpretation = new Label { Text = interpretation, Top = 250, Left = 0, Width = 600, Height = 50, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Arial", 20, FontStyle.Bold), ForeColor = Color.Gold };
+            
+            Label lblSaved = new Label { Text = "Результати збережено у файл data\\results.txt", Top = 340, Left = 0, Width = 600, Height = 30, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Arial", 10, FontStyle.Italic), ForeColor = Color.LightGray };
 
-            var btnClose = new Button() { Text = "Завершити", Location = new Point(125, 290), Size = new Size(200, 45), BackColor = Color.MediumSlateBlue, ForeColor = Color.White, Font = new Font("Segoe UI", 12, FontStyle.Bold), FlatStyle = FlatStyle.Flat, Cursor = Cursors.Hand };
-            btnClose.FlatAppearance.BorderSize = 0;
-            btnClose.Click += (s, e) => this.Close();
+            Button btnFinish = new Button { Text = "Завершити", Top = 390, Left = 150, Width = 300, Height = 45, BackColor = Color.MediumSlateBlue, ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Font = new Font("Arial", 12, FontStyle.Bold), Cursor = Cursors.Hand };
+            btnFinish.FlatAppearance.BorderSize = 0;
+            btnFinish.Click += (s, e) => Environment.Exit(0);
 
-            mainPanel.Controls.AddRange(new Control[] { lblTitle, lblUser, lblScore, lblResult, lblSaved, btnClose });
+            mainPanel.Controls.Add(lblTitle);
+            mainPanel.Controls.Add(lblUser);
+            mainPanel.Controls.Add(lblScore);
+            mainPanel.Controls.Add(lblConcTitle);
+            mainPanel.Controls.Add(lblInterpretation);
+            mainPanel.Controls.Add(lblSaved);
+            mainPanel.Controls.Add(btnFinish);
+
+            // ПРИВЯЗКА КЛАВИШИ ENTER К КНОПКЕ "ЗАВЕРШИТИ"
+            this.AcceptButton = btnFinish;
+
             this.Controls.Add(mainPanel);
 
-            this.Resize += (s, e) => CenterPanel();
-            CenterPanel();
+            CenterPanel(mainPanel);
+            this.Resize += (s, e) => CenterPanel(mainPanel);
         }
-
-        private void CenterPanel()
-        {
-            mainPanel.Left = (this.ClientSize.Width - mainPanel.Width) / 2;
-            mainPanel.Top = (this.ClientSize.Height - mainPanel.Height) / 2;
-        }
+        
+        protected override void OnFormClosed(FormClosedEventArgs e) => Environment.Exit(0);
     }
 }
